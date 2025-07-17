@@ -9,6 +9,7 @@ import axios from "axios";
 
 function App() {
   const [noteText, setNoteText] = useState("");
+  const [notes, setNotes] = useState([]);
   const textareaRef = useRef(null);
 
   const containerStyle = {
@@ -17,18 +18,31 @@ function App() {
     height: "100vh",
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     try {
-      const response = axios.post(`${import.meta.env.VITE_API_URL}/notes`, {
-        title: "My Note",
-        content: noteText,
-      });
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/notes`,
+        {
+          title: "My Note",
+          content: noteText,
+        }
+      );
       alert("Note saved!");
+      fetchNotes();
     } catch (error) {
       console.error("Error saving note:", err);
       alert("Failed to save note.");
     }
   };
+
+  async function fetchNotes() {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/notes`);
+      setNotes(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   return (
     <>
@@ -46,6 +60,15 @@ function App() {
         </div>
         <div className="card2">
           <Preview noteText={noteText} />
+          <h2>Saved Notes</h2>
+          <ul>
+            {notes.map((note) => (
+              <li key={note._id}>
+                <strong>{note.title}</strong>
+                <p>{note.content}</p>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </>
