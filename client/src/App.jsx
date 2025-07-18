@@ -6,6 +6,7 @@ import Preview from "./components/Preview";
 import Toolbar from "./components/Toolbar";
 import "katex/dist/katex.min.css";
 import axios from "axios";
+import katex from "katex";
 
 function App() {
   const [noteText, setNoteText] = useState("");
@@ -65,7 +66,14 @@ function App() {
             {notes.map((note) => (
               <li key={note._id}>
                 <strong>{note.title}</strong>
-                <p>{note.content}</p>
+                <p
+                  dangerouslySetInnerHTML={{
+                    __html: katex.renderToString(note.content, {
+                      throwOnError: false,
+                      displayMode: true,
+                    }),
+                  }}
+                />
               </li>
             ))}
           </ul>
